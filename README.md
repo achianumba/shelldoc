@@ -1,4 +1,4 @@
-# shelldoc
+# shelldoc [WIP]
 
 Generate documentation from annotated shell scripts.
 
