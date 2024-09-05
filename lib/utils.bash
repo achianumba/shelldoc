@@ -35,8 +35,7 @@ Options:
   \t Used as the name of the documentation when
   \t passed alongside -m or --multiple
   -r
-  --recurse\t Generate documenation from all shell
-  \t files in a project.
+  --recurse\t Scan all sub folders for comments.
 
   -t TITLE
   --title TITLE\t Sets the documenation's title.
@@ -48,4 +47,4 @@ USAGE
 }
 
 # Handle errors
-trap "print_usage" ERR
+# trap "print_usage" ERR

@@ -16,3 +16,7 @@ Generate documentation from annotated shell scripts.
 
 - `$` - Shell script variable to be parsed and its output used to populate/replace field
 - `%` - Shelldoc variable.  (This might need a way to specify whether to parse actual value or not. E.g., to parse value into docs, close it off with %)
+
+## Development
+
+- `. setup_tests.bash`

@@ -1,7 +1,10 @@
 #!/bin/env bash
 
-# Dependencies
-deps=("bash")
+set -e
+
+source setup.bash
+
+bats tests/{utils,config.default,config.set-option}.bats
 
 # Concatenation order
 cat_order=(
