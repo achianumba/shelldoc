@@ -1,4 +1,4 @@
-# shelldoc
+# shelldoc [WIP]
 
 Generate documentation from annotated shell scripts.
 
@@ -19,4 +19,5 @@ Generate documentation from annotated shell scripts.
 
 ## Development
 
-- `. setup_tests.bash`
+- clone repo & sub modules
+- `. setup.bash`
