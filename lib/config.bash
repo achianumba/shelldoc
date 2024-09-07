@@ -8,9 +8,10 @@ config_configure="$(pwd)/shelldoc.conf"
 config_description="\`${cmd}\` Documentation"
 
 ## @var {array=$config_exclude} - A comma-separated array of filename patterns to exclude from $config_include. #
-config_exclude=()
+declare -agf config_exclude
 
 ## @var {array=$config_include} - Comma-separated array of filename patterns to parse. #
+declare -agf
 config_include=("*.sh" "*.bash")
 
 ## @var {boolean=$config_multiple} - Generates multi-file documentation if true. #
@@ -29,19 +30,22 @@ config_title="${cmd}"
 is_cmd_arg=false
 
 ## @var {number=$shift_count=count} - Number of indexes to move when parsing command line args #
-shift_count=0
+declare -ig shift_count
 
 ##
 # @arg {string} $1 - Config file field or command line option
 # @arg {string|boolean} $2 - Config file field or command line option argument
 #
 set_option() {
+
   ## @var {boolean=$is_cmd_arg} #
   is_cmd_arg=false
 
   if [[ "$1" =~ ^\- ]]; then
     is_cmd_arg=true
   fi
+
+  shift_count=0
 
   # Overwrite default config or config file configs
   case "${1}" in
@@ -61,8 +65,8 @@ set_option() {
 
   ## @option %config_exclude #
   -e | --exclude | exclude)
-    exclude_patterns="$(echo "${2}" | tr -d " ")"
-    IFS="," read -r -a patterns <<<"${2}"
+    patterns="$(echo "${2}" | tr -d " ")"
+    IFS="," read -r -a patterns <<<"$patterns"
 
     config_exclude=(${patterns[@]})
     shift_count=2
@@ -114,44 +118,46 @@ set_option() {
     ;;
 
   --)
+    shift_count=1
     return 0
     ;;
 
   *)
-    [ "${is_cmd_arg}" == false ] && echo -e "${cmd}: Error\nUnknown configuration field '${1}' in ${config_configure}" && exit 1
+    # [ "${is_cmd_arg}" == false ] && echo -e "${cmd}: Error\nUnknown configuration field '${1}' in ${config_configure}" && exit 1
     ;;
   esac
 }
 
 ## Overwrites defaults with user's config file
-load_config_file() {
+parse_config() {
   if [ -e "${config_configure}" ]; then
     # Process each line
     mapfile -t lines <"${config_configure}"
 
     for line in "${lines[@]}"; do
       # Skip empty lines or comments
-      [[ -z "$line" || "$line" =~ ^# ]] && continue
+      [[ $(echo "${line}" | grep -cE '^(\s+)?#') -gt 0 || $(echo "${line}" | grep -cE '^$') -gt 0 ]] && continue
 
-      # Split the line into key and value
-      IFS='=' read -r key value <<<"$line"
-      # Trim leading/trailing whitespace
-      key=$(echo "${key}" | xargs)
-      value=$(echo "${value}" | xargs)
+      key="${line%=*}"
+      value="${line#*=}"
+
+      if [[ "${value}" == "'"* || "${value}" == '"'* ]]; then
+        value="${line#*=}"
+        value="${value:1:-1}"
+      fi
 
       set_option "${key}" "${value}"
     done
   fi
 }
 
-# Parse arguments
-parse_cmd_args() {
+parse_cmd_opts() {
   # Define arguments
   opts=$(
-    getopt -o "c:d:e:hi:mo:r:t" \
-      -l "configure:,description:,exclude:,help:,include:,multiple,outfile:,recurse,title:" \
+    getopt -o "c:d:e:hi:mo:rt:" \
+      -l "configure:,description:,exclude:,help,include:,multiple,outfile:,recurse,title:" \
       --name "${cmd}" \
-      -- "$@"
+      -- "${@}"
   )
 
   eval set -- "${opts}"
@@ -159,6 +165,12 @@ parse_cmd_args() {
   # Overwrite default config and config file
   while [ $# -gt 0 ]; do
     set_option "${1}" "${2}"
-    $is_cmd_arg && shift $shift_count
+    echo "$1: $shift_count: $is_cmd_arg"
+    
+    if [ "${is_cmd_arg}" ]; then
+      shift $shift_count
+    fi
   done
 }
+
+parse_cmd_opts "${@}"

@@ -1,4 +1,4 @@
-readonly cmd="shelldoc"
+cmd="shelldoc"
 
 print_usage() {
   usage_info=$(
