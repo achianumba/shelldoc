@@ -1,10 +1,10 @@
 #!/bin/env bash
 
-set -e
+set -euo pipefail
 
 source setup.bash
 
-bats tests/{utils,config.default,config.set-option}.bats
+bats tests
 
 # Concatenation order
 cat_order=(
@@ -16,7 +16,7 @@ source lib/utils.bash
 
 echo -e "\nBundling ${cmd} ..."
 
-echo -e "#!/bin/env bash\n\nset -e" > "${cmd}"
+echo -e "#!/bin/env bash\n\nset -euo pipefail" > "${cmd}"
 
 for f in ${cat_order[@]}; do
   file_path="lib/${f}.bash"

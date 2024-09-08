@@ -1,14 +1,13 @@
 source "${LIB_UTILS}"
 
-## @var {file=$config_configure} - Project configuration file. #
-# Weird name but matches dynamically declared command line option
-config_configure="$(pwd)/shelldoc.conf"
+## @var {file=$config_file} - Project configuration file. #
+config_file="$(pwd)/shelldoc.conf"
 
 ## @var {string=$config_description} - Project/documentation description. #
 config_description="\`${cmd}\` Documentation"
 
 ## @var {array=$config_exclude} - A comma-separated array of filename patterns to exclude from $config_include. #
-declare -agf config_exclude
+declare -ag config_exclude
 
 ## @var {array=$config_include} - Comma-separated array of filename patterns to parse. #
 declare -agf
@@ -49,9 +48,9 @@ set_option() {
 
   # Overwrite default config or config file configs
   case "${1}" in
-  ## @option %config_configure #
+  ## @option %config_file #
   -c | --configure)
-    config_configure="${2}"
+    config_file="${2}"
     shift_count=2
     return 0
     ;;
@@ -123,16 +122,16 @@ set_option() {
     ;;
 
   *)
-    # [ "${is_cmd_arg}" == false ] && echo -e "${cmd}: Error\nUnknown configuration field '${1}' in ${config_configure}" && exit 1
+    [ "${is_cmd_arg}" == false ] && echo -e "${cmd}: Error\nUnknown configuration field '${1}' in ${config_file}" && exit 1
     ;;
   esac
 }
 
 ## Overwrites defaults with user's config file
 parse_config() {
-  if [ -e "${config_configure}" ]; then
+  if [ -e "${config_file}" ]; then
     # Process each line
-    mapfile -t lines <"${config_configure}"
+    mapfile -t lines <"${config_file}"
 
     for line in "${lines[@]}"; do
       # Skip empty lines or comments
@@ -165,7 +164,6 @@ parse_cmd_opts() {
   # Overwrite default config and config file
   while [ $# -gt 0 ]; do
     set_option "${1}" "${2}"
-    echo "$1: $shift_count: $is_cmd_arg"
     
     if [ "${is_cmd_arg}" ]; then
       shift $shift_count
@@ -173,4 +171,3 @@ parse_cmd_opts() {
   done
 }
 
-parse_cmd_opts "${@}"

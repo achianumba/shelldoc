@@ -1,11 +1,10 @@
 setup() {
   load "setup.bash"
-  _common_setup
-  source "${LIB_CONFIG}"
+  _config_setup
 }
 
-@test "\$config_configure has the correct default value." {
-  assert [ "${config_configure}" == "${PROJECT_ROOT}/shelldoc.conf" ]
+@test "\$config_file has the correct default value." {
+  assert [ "${config_file}" == "${PROJECT_ROOT}/shelldoc.conf" ]
 }
 
 @test "\$config_description has the correct default value." {
@@ -13,7 +12,7 @@ setup() {
 }
 
 @test "\$config_exclude array is empty by default." {
-  assert [ ${#config_exclude[@]} -eq 0 ]
+  assert [ -z ${config_exclude[@]} ]
 }
 
 @test "\$config_include array contains 2 items by default." {
