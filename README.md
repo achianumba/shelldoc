@@ -7,6 +7,9 @@ Generate documentation from annotated shell scripts.
 - [x] Write bundler in BASH, not Make. 
 - [x] Load user configuration to overwrite defaults.
 - [x] Parse command line arguments to overwrite defaults and config file.
+- [ ] Extract doclets from included scripts.
+- [ ] Write doclets to multiple or a single file.
+- [ ] Replace ***shelldoc.conf*** with shelldoc.ini?
 
 ## Config filename
 
